@@ -1269,8 +1269,8 @@
     if (wasOpen) restoreFocus();
   }
 
-  function openModal(el, focusTarget) {
-    rememberFocus();
+  function openModal(el, focusTarget, opener) {
+    rememberFocus(opener);
     el.classList.remove('hidden');
     focusEl(focusTarget || el.querySelector('.dialog'));
   }
@@ -1290,11 +1290,11 @@
     }
   }
 
-  function confirmDialog(title, msg, okText) {
+  function confirmDialog(title, msg, okText, opener) {
     els.confirmTitle.textContent = title;
     els.confirmMsg.textContent = msg;
     els.confirmOk.textContent = okText || '确定';
-    openModal(els.confirmModal, els.confirmCancel);
+    openModal(els.confirmModal, els.confirmCancel, opener);
     return new Promise(function (resolve) { confirmResolver = resolve; });
   }
 
@@ -1456,7 +1456,7 @@
     }
   }
 
-  async function writeFavorite(id) {
+  async function writeFavorite(id, opener) {
     var cfg = MODES[state.mode];
     var list = state.favorites[state.mode];
     var fav = null;
@@ -1469,7 +1469,7 @@
     var group = state.data[state.mode][gi];
 
     if (hasAnyValue(group, cfg)) {
-      var ok = await confirmDialog('覆盖号码', '第' + (gi + 1) + '组已有号码，写入后将被替换。', '覆盖');
+      var ok = await confirmDialog('覆盖号码', '第' + (gi + 1) + '组已有号码，写入后将被替换。', '覆盖', opener);
       if (!ok) return;
     }
 
@@ -1486,9 +1486,9 @@
     toast('已写入第' + (gi + 1) + '组');
   }
 
-  async function clearFavorites() {
+  async function clearFavorites(opener) {
     if (!state.favorites[state.mode].length) return;
-    var ok = await confirmDialog('清空收藏', '当前模式下的收藏会全部删除，无法恢复。', '清空');
+    var ok = await confirmDialog('清空收藏', '当前模式下的收藏会全部删除，无法恢复。', '清空', opener);
     if (!ok) return;
     state.favorites[state.mode] = [];
     save();
@@ -1520,13 +1520,13 @@
     render();
   }
 
-  async function clearGroup(gi) {
+  async function clearGroup(gi, opener) {
     var cfg = MODES[state.mode];
     var group = state.data[state.mode][gi];
 
     if (!hasAnyValue(group, cfg)) return;
 
-    var ok = await confirmDialog('清空第' + (gi + 1) + '组', '该组号码和固定状态都会被清除。', '清空');
+    var ok = await confirmDialog('清空第' + (gi + 1) + '组', '该组号码和固定状态都会被清除。', '清空', opener);
     if (!ok) return;
 
     state.data[state.mode][gi] = emptyGroup(cfg);
@@ -1546,14 +1546,14 @@
     toast(any ? '已随机 ' + GROUP_COUNT + ' 组（固定号保留）' : GROUP_COUNT + ' 组号码都已全部固定');
   }
 
-  async function resetAll() {
+  async function resetAll(opener) {
     var cfg = MODES[state.mode];
     if (!state.data[state.mode].some(function (g) { return hasAnyValue(g, cfg); })) {
       toast('当前模式还没有号码');
       return;
     }
 
-    var ok = await confirmDialog('重置全部', '将清空当前模式下的 ' + GROUP_COUNT + ' 组号码和固定状态，收藏不受影响。', '重置');
+    var ok = await confirmDialog('重置全部', '将清空当前模式下的 ' + GROUP_COUNT + ' 组号码和固定状态，收藏不受影响。', '重置', opener);
     if (!ok) return;
 
     state.data[state.mode] = Array.from({ length: GROUP_COUNT }, function () { return emptyGroup(cfg); });
@@ -1615,9 +1615,9 @@
     }
   }
 
-  function openTextModal(text) {
+  function openTextModal(text, opener) {
     els.copyTextArea.value = text;
-    openModal(els.textModal, els.copyTextArea);
+    openModal(els.textModal, els.copyTextArea, opener);
     setTimeout(function () {
       els.copyTextArea.focus();
       els.copyTextArea.select();
@@ -1666,7 +1666,7 @@
     var ok = await copyText(text);
 
     if (!ok) {
-      openTextModal(text);
+      openTextModal(text, els.copyBtn);
       if (filled) toast('已补全 ' + filled + ' 个空位，可点撤销还原', '撤销', undoFill);
       return;
     }
@@ -1703,7 +1703,7 @@
     });
 
     els.randomAll.addEventListener('click', randomizeAll);
-    els.resetAll.addEventListener('click', function () { resetAll(); });
+    els.resetAll.addEventListener('click', function () { resetAll(els.resetAll); });
     els.copyBtn.addEventListener('click', function () { doCopy(); });
     els.favBtn.addEventListener('click', openFav);
     els.overlay.addEventListener('click', closeSheets);
@@ -1726,7 +1726,7 @@
 
       var actEl = e.target.closest('[data-act]');
       if (actEl) {
-        handleGroupAction(actEl.dataset.act, Number(actEl.dataset.g));
+        handleGroupAction(actEl.dataset.act, Number(actEl.dataset.g), actEl);
         return;
       }
 
@@ -1822,14 +1822,14 @@
     els.favList.addEventListener('click', function (e) {
       var write = e.target.closest('[data-write]');
       if (write) {
-        writeFavorite(write.dataset.write);
+        writeFavorite(write.dataset.write, write);
         return;
       }
       var del = e.target.closest('[data-del]');
       if (del) deleteFavorite(del.dataset.del);
     });
 
-    els.favClear.addEventListener('click', function () { clearFavorites(); });
+    els.favClear.addEventListener('click', function () { clearFavorites(els.favClear); });
 
     // 确认弹窗
     els.confirmCancel.addEventListener('click', function () { settleConfirm(false); });
@@ -1934,7 +1934,7 @@
     render();
   }
 
-  function handleGroupAction(act, gi) {
+  function handleGroupAction(act, gi, opener) {
     if (act === 'fav') {
       toggleFavorite(gi);
       return;
@@ -1952,7 +1952,7 @@
       return;
     }
     if (act === 'clear') {
-      clearGroup(gi);
+      clearGroup(gi, opener);
     }
   }
 
