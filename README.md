@@ -76,49 +76,16 @@
 └── .gitignore
 ```
 
-## 上传到 GitHub
-
-### 方式一：网页上传（最简单）
-
-1. 在 GitHub 右上角 **+ → New repository**，仓库名填 `lottery-picker`，选 **Public**，不要勾选初始化 README。
-2. 进入空仓库，点 **uploading an existing file**。
-3. 把本目录里的 `index.html`、`favicon.svg`、`apple-touch-icon.png`、`README.md`、`LICENSE`、`.gitignore` 和 `screenshots/` 一起拖进去。
-4. 点 **Commit changes**。
-
-> `index.html` 必须位于仓库**根目录**，不要多套一层文件夹，否则 Pages 首页会 404。
-
-### 方式二：命令行
-
-```bash
-cd lottery-picker
-git init -b main
-git add .
-git commit -m "feat: 双色球 / 大乐透选号器"
-git remote add origin https://github.com/xuanloyer/lottery-picker.git
-git push -u origin main
-```
-
-如果首次提交提示没有配置身份：
-
-```bash
-git config --global user.name "你的名字"
-git config --global user.email "你的邮箱"
-```
-
-> 如果仓库名不叫 `lottery-picker`，把上面的远程地址和下面的 Pages 地址里的 `lottery-picker` 换成实际仓库名。
-
 ## 部署到 GitHub Pages
 
-1. 新建一个 **Public** 仓库 `lottery-picker`（如果还没建）。
-2. 把本目录的 `index.html`、`favicon.svg`、`apple-touch-icon.png`、`README.md`、`LICENSE`、`.gitignore` 和 `screenshots/` 放到仓库根目录。
-3. 仓库 **Settings → Pages → Build and deployment**：
-   - Source 选 `Deploy from a branch`
-   - Branch 选 `main`，目录选 `/ (root)`
-   - 点 **Save**
-4. 等 1 分钟左右，访问 <https://xuanloyer.github.io/lottery-picker/>
-5. 手机打开后，在浏览器菜单里选「添加到主屏幕」，用起来就像 App。
+代码已经推送到 `main`，在 GitHub 上开启 Pages 即可：
 
-> 仓库名不是 `lottery-picker` 时，把上面地址里的 `lottery-picker` 换成实际仓库名。
+1. 打开仓库 **Settings → Pages → Build and deployment**
+2. Source 选 `Deploy from a branch`
+3. Branch 选 `main`，目录选 `/ (root)`，点 **Save**
+4. 等 1 分钟左右，访问 <https://xuanloyer.github.io/lottery-picker/>
+
+手机打开后，在浏览器菜单里选「添加到主屏幕」，用起来就像 App。
 
 ## 数据说明
 
