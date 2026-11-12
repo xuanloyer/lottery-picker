@@ -818,8 +818,7 @@
   var confirmResolver = null;
   var toastTimer = null;
   var toastAction = null;
-  var lastFocusEl = null;
-  var lastFocusSig = null;
+  var focusStack = [];
   var pendingUndo = null;
 
   /* ---------------- 工具 ---------------- */
@@ -1151,21 +1150,20 @@
     try { el.focus({ preventScroll: true }); } catch (e) { /* 忽略 */ }
   }
 
+  // 弹层可能叠两层（收藏夹 → 覆盖确认），用栈记住每一层是从哪打开的
   function rememberFocus(opener) {
     var el = opener || document.activeElement;
     if (!el || el === document.body || el === document.documentElement) {
-      lastFocusEl = null;
-      lastFocusSig = null;
+      focusStack.push(null);
       return;
     }
-    lastFocusEl = el;
-    lastFocusSig = focusSignature(el);
+    focusStack.push({ el: el, sig: focusSignature(el) });
   }
 
   function restoreFocus() {
-    var target = lastFocusEl && lastFocusEl.isConnected ? lastFocusEl : findBySignature(lastFocusSig);
-    lastFocusEl = null;
-    lastFocusSig = null;
+    var entry = focusStack.pop();
+    if (!entry) return;
+    var target = entry.el && entry.el.isConnected ? entry.el : findBySignature(entry.sig);
     focusEl(target);
   }
 
@@ -1638,6 +1636,7 @@
     try {
       var restored = normalize(JSON.parse(pendingUndo.before));
       if (!restored) { pendingUndo = null; return; }
+      closeModal(els.textModal);
       state = restored;
       pendingUndo = null;
       save();
