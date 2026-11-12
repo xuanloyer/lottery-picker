@@ -59,6 +59,28 @@
 
 大乐透对应为 `前 ... + 后 ...` 和 `...+...`。
 
+## 手机端使用
+
+手机浏览器打开：
+
+<https://xuanloyer.github.io/lottery-picker/>
+
+### 添加到主屏幕
+
+- iPhone / Safari：点底部「分享」→「添加到主屏幕」
+- Android / Chrome：点右上角菜单 →「添加到主屏幕」或「安装应用」
+
+之后从桌面图标进入，全屏运行，和 App 一样。
+
+### 触屏操作
+
+- 点号码：改号
+- 长按号码：固定 / 取消固定
+- 点「随机」：只补未固定的号码
+- 点「复制 5 组」：复制文本，可直接粘贴到微信
+
+> 号码和收藏只保存在这台手机的浏览器里，换手机或清缓存会丢。
+
 ## 兼容性
 
 用到了 `clamp()`、`aspect-ratio`、`inset` 等现代 CSS，以及 `Element.closest`、`Set` 等 API，需要 2020 年之后的浏览器（Chrome / Edge 88+、iOS 15+、新版 Firefox / Safari）。不支持 IE。
@@ -75,17 +97,6 @@
 ├── LICENSE
 └── .gitignore
 ```
-
-## 部署到 GitHub Pages
-
-代码已经推送到 `main`，在 GitHub 上开启 Pages 即可：
-
-1. 打开仓库 **Settings → Pages → Build and deployment**
-2. Source 选 `Deploy from a branch`
-3. Branch 选 `main`，目录选 `/ (root)`，点 **Save**
-4. 等 1 分钟左右，访问 <https://xuanloyer.github.io/lottery-picker/>
-
-手机打开后，在浏览器菜单里选「添加到主屏幕」，用起来就像 App。
 
 ## 数据说明
 
