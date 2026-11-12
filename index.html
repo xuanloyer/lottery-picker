@@ -1642,6 +1642,7 @@
       pendingUndo = null;
       save();
       render();
+      focusEl(els.copyBtn);
       toast('已撤销补全');
     } catch (e) {
       pendingUndo = null;
@@ -1766,6 +1767,11 @@
     function endPress() {
       clearTimeout(longPressTimer);
       pressStart = null;
+      // 长按触发重绘后浏览器可能不再派发 click，标记留到下一轮事件就作废，
+      // 否则会吞掉紧接着的下一次点击（键盘 / 读屏触发的 click 也没有 pointerdown）
+      if (longPressFired) {
+        setTimeout(function () { longPressFired = false; }, 0);
+      }
     }
 
     els.groups.addEventListener('pointerup', endPress);
