@@ -61,7 +61,7 @@
 
 ## 手机端使用
 
-手机浏览器打开：
+手机浏览器打开（仓库开启 GitHub Pages 后）：
 
 <https://xuanloyer.github.io/lottery-picker/>
 
